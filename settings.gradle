@@ -1,0 +1,2 @@
+rootProject.name='Loupe5'
+include ':app'
