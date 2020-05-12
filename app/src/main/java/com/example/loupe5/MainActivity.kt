@@ -8,9 +8,7 @@ import android.hardware.camera2.*
 import android.os.Bundle
 import android.util.Log
 import android.util.Size
-import android.view.MotionEvent
-import android.view.Surface
-import android.view.TextureView
+import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.loupe5.GlassGestureDetector.Gesture
@@ -136,6 +134,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
         setContentView(R.layout.activity_main)
 
         gestureDetector = GlassGestureDetector(this, gestureListener)
