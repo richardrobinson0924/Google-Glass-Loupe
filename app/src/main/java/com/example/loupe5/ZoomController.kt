@@ -3,10 +3,13 @@ package com.example.loupe5
 import android.graphics.Rect
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CaptureRequest
+import android.util.Log
 import kotlin.math.max
 
 class ZoomController(characteristics: CameraCharacteristics) {
-    private val sensorSize = characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE)!!
+    private val sensorSize = characteristics
+        .get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE)!!
+        .also { Log.d(TAG, "sensor size = $it") }
 
     private val maxZoom = max(
         characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM) ?: 0F,
@@ -23,6 +26,7 @@ class ZoomController(characteristics: CameraCharacteristics) {
      * produced by `DEFAULT_FACTOR` and the maximum possible zoom of the camera
      */
     fun setZoomFor(builder: CaptureRequest.Builder, zoomLevel: Float) {
+        Log.d(TAG, "clamping $zoomLevel between $DEFAULT_FACTOR and $maxZoom")
         val clamped = zoomLevel.coerceIn(DEFAULT_FACTOR, maxZoom)
 
         val cx = sensorSize.width() / 2
@@ -35,6 +39,7 @@ class ZoomController(characteristics: CameraCharacteristics) {
     }
 
     companion object {
+        private val TAG = this::class.simpleName
         const val DEFAULT_FACTOR = 1F
     }
 }

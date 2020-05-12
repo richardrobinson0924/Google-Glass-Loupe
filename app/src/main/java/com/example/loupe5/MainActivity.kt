@@ -13,11 +13,14 @@ import android.view.Surface
 import android.view.TextureView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.loupe5.GlassGestureDetector.Gesture
+import com.example.loupe5.GlassGestureDetector.OnGestureListener
 
 class MainActivity : AppCompatActivity() {
     private lateinit var previewTexture: TextureView
     private lateinit var cameraManager: CameraManager
     private lateinit var zoomController: ZoomController
+    private lateinit var gestureDetector: GlassGestureDetector
 
     private var zoomLevel: Float = ZoomController.DEFAULT_FACTOR
 
@@ -34,20 +37,47 @@ class MainActivity : AppCompatActivity() {
      */
     private fun zoomBy(factor: Float) {
         zoomLevel += factor
-        Log.d(null, zoomLevel.toString())
+        Log.d(TAG, "zoom level = $zoomLevel")
         zoomController.setZoomFor(builder = captureRequestBuilder!!, zoomLevel = zoomLevel)
 
         captureSession?.stopRepeating()
         captureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, cameraThread.handler)
     }
 
+    private val gestureListener = object : OnGestureListener {
+        override fun onGesture(gesture: Gesture): Boolean {
+            Log.d(TAG, "gesture: $gesture")
+            return when (gesture) {
+                Gesture.TAP -> {
+                    zoomBy(-zoomLevel + 1)
+                    true
+                }
+                Gesture.SWIPE_FORWARD -> {
+                    zoomBy(1F)
+                    true
+                }
+                Gesture.SWIPE_BACKWARD -> {
+                    zoomBy(-1F)
+                    true
+                }
+                Gesture.SWIPE_DOWN -> {
+                    finish()
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
     private val cameraStateCallback = object : CameraDevice.StateCallback() {
         override fun onOpened(camera: CameraDevice) {
+            Log.d(TAG, "camera opened")
             cameraDevice = camera
             createPreviewSession()
         }
 
         override fun onDisconnected(camera: CameraDevice) {
+            Log.d(TAG, "camera disconnected")
             camera.close()
             cameraDevice = null
         }
@@ -76,6 +106,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onConfigured(session: CameraCaptureSession) {
+            Log.d(TAG, "camera capture session configured")
             if (cameraDevice == null) return
             captureSession = session.apply {
                 setRepeatingRequest(captureRequestBuilder!!.build(), null, cameraThread.handler)
@@ -84,15 +115,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun createPreviewSession() {
+        Log.d(TAG, "creating preview surface")
         val previewSurface = previewTexture.surfaceTexture.let {
             it.setDefaultBufferSize(previewSize!!.width, previewSize!!.height)
             return@let Surface(it)
         }
 
+        Log.d(TAG, "creating capture request builder")
         captureRequestBuilder = cameraDevice?.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)?.apply {
             addTarget(previewSurface)
         }
 
+        Log.d(TAG, "creating capture session")
         cameraDevice?.createCaptureSession(
             listOf(previewSurface),
             captureStateCallback,
@@ -104,18 +138,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        gestureDetector = GlassGestureDetector(this, gestureListener)
         cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
         previewTexture = findViewById(R.id.preview)
     }
 
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        super.onTouchEvent(event)
-        zoomBy(factor = 1F)
-        return true
-    }
-
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "resuming")
         cameraThread.start()
         if (previewTexture.isAvailable) {
             setupCamera()
@@ -127,6 +157,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
+        Log.d(TAG, "stopping")
         captureSession?.close(); captureSession = null
         cameraDevice?.close(); cameraDevice = null
         cameraThread.stop()
@@ -137,6 +168,8 @@ class MainActivity : AppCompatActivity() {
         previewSize = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
             ?.getOutputSizes(SurfaceTexture::class.java)
             ?.first()
+            ?.also { Log.d(TAG, "preview size = $it") }
+
         zoomController = ZoomController(characteristics)
     }
 
@@ -166,8 +199,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent) =
+        if (gestureDetector.onTouchEvent(ev)) {
+            true
+        } else super.dispatchTouchEvent(ev)
 
     companion object {
+        private val TAG = this::class.simpleName
         private const val PERMISSION_CODE = 105
     }
 }
