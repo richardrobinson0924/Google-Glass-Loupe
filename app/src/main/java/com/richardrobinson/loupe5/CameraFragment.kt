@@ -1,4 +1,4 @@
-package com.example.loupe5
+package com.richardrobinson.loupe5
 
 import android.Manifest
 import android.content.Context
@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

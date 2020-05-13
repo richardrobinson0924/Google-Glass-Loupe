@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.loupe5
+package com.richardrobinson.loupe5
 
 import android.graphics.Point
 import android.hardware.camera2.CameraCharacteristics

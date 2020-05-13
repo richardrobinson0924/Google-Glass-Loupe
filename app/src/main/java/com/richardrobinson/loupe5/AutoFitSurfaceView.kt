@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.loupe5
+package com.richardrobinson.loupe5
 
 import android.content.Context
 import android.util.AttributeSet

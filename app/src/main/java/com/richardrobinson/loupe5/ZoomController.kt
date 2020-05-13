@@ -1,4 +1,4 @@
-package com.example.loupe5
+package com.richardrobinson.loupe5
 
 import android.graphics.Rect
 import android.hardware.camera2.CameraCharacteristics

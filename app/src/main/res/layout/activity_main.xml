@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/camera_fragment"
-        android:name="com.example.loupe5.CameraFragment"
+        android:name="com.richardrobinson.loupe5.CameraFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

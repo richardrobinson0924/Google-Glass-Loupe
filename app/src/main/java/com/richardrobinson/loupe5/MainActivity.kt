@@ -1,19 +1,9 @@
-package com.example.loupe5
+package com.richardrobinson.loupe5
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.graphics.SurfaceTexture
-import android.hardware.camera2.*
 import android.os.Bundle
-import android.util.Log
-import android.util.Size
 import android.view.*
-import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import com.example.loupe5.GlassGestureDetector.Gesture
-import com.example.loupe5.GlassGestureDetector.OnGestureListener
+import com.richardrobinson.loupe5.GlassGestureDetector.Gesture
 
 class MainActivity : AppCompatActivity(), GlassGestureDetector.OnGestureListener {
     private lateinit var gestureDetector: GlassGestureDetector
