@@ -1,4 +1,4 @@
-# Google-Glass-Loupe
+# Google Glass Loupe
 
 An MVP implementation of a simple Digital Loupe (magnifying glass) for Google Glass EE2, using the Android Camera2 API
 
